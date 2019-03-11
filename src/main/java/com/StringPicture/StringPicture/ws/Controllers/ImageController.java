@@ -1,5 +1,6 @@
 package com.StringPicture.StringPicture.ws.Controllers;
 
+import com.StringPicture.StringPicture.svc.ImageProcessor.ImageProcessor;
 import com.StringPicture.StringPicture.svc.Storage.StorageFileNotFoundException;
 import com.StringPicture.StringPicture.svc.Storage.StorageService;
 import com.google.gson.Gson;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -31,16 +33,13 @@ public class ImageController {
     @GetMapping("/images")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public String listUploadedFiles() {
+    public ResponseEntity<String> listUploadedFiles() {
         List<String> fileNames = new ArrayList<>();
         fileNames.addAll(storageService.loadAll().map(Path::getFileName).map(Path::toString).collect(Collectors.toList()));
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
-
         String json = new Gson().toJson(fileNames);
 
-        return json;
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(json);
     }
 
     @GetMapping("/image/{filename:.+}")
@@ -52,17 +51,34 @@ public class ImageController {
                 "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
 
-    @PostMapping("/image/upload")
-    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/image/transform")
     @ResponseBody
-    public String handleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
+    public ResponseEntity<Resource> transformImage(@RequestParam("file") MultipartFile source) {
         try {
-            storageService.store(file);
-            return Helper.generateJsonResponseMessage("Fuck yeah you just uploaded " + file.getOriginalFilename());
+            storageService.store(source);
+            String filepath = storageService.load(source.getOriginalFilename()).toString();
+            ImageProcessor.transformImage(filepath);
+            Resource result = storageService.loadAsResource(filepath);
+            return ResponseEntity.ok().header(
+                    HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=\"" + result.getFilename() + "\"").body(result);
         } catch (Exception e) {
-            return Helper.generateJsonErrorMessage(e.getMessage(), 502);
+            return ResponseEntity.status(409).contentType(MediaType.APPLICATION_JSON).build();
         }
 
+    }
+
+    @PostMapping("/image/upload")
+    @ResponseBody
+    public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file) {
+        try {
+            storageService.store(file);
+            return ResponseEntity.ok().header(
+                    HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=\"" + file.getOriginalFilename() + "\"").body(Helper.generateJsonResponseMessage("Uploaded " + file.getOriginalFilename()));
+        } catch (Exception e) {
+            return ResponseEntity.status(409).contentType(MediaType.APPLICATION_JSON).build();
+        }
     }
 
     @ExceptionHandler(StorageFileNotFoundException.class)
