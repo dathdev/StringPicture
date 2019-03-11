@@ -6,16 +6,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class StorageProperties {
 
     /**
-     * Folder location for storing files
+     * Folder storagePath for storing files
      */
-    private String location = "src/upload/";
+    private String storagePath = "src/storage/";
 
-    public String getLocation() {
-        return location;
+    public String getStoragePath() {
+        return storagePath;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setStoragePath(String storagePath) {
+        this.storagePath = storagePath;
     }
-
 }

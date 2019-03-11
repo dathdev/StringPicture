@@ -1,5 +1,7 @@
 package com.StringPicture.StringPicture.ws.Controllers;
 
+import com.StringPicture.StringPicture.svc.Storage.StorageFileNotFoundException;
+import com.StringPicture.StringPicture.svc.Storage.StorageService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -52,9 +54,10 @@ public class ImageController {
     @PostMapping("/image/upload")
     public String handleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
         storageService.store(file);
-        redirectAttributes.addFlashAttribute("message", "You successfully uploaded" + file.getOriginalFilename() + "!");
+//        redirectAttributes.addFlashAttribute("message", "You successfully uploaded" + file.getOriginalFilename() + "!");
 
-        return "redirect:/";
+
+//        return "redirect:/";
     }
 
     @ExceptionHandler(StorageFileNotFoundException.class)
