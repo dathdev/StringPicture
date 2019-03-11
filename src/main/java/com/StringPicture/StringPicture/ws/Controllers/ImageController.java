@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,12 +53,16 @@ public class ImageController {
     }
 
     @PostMapping("/image/upload")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
     public String handleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
-        storageService.store(file);
-//        redirectAttributes.addFlashAttribute("message", "You successfully uploaded" + file.getOriginalFilename() + "!");
+        try {
+            storageService.store(file);
+            return Helper.generateJsonResponseMessage("Fuck yeah you just uploaded " + file.getOriginalFilename());
+        } catch (Exception e) {
+            return Helper.generateJsonErrorMessage(e.getMessage(), 502);
+        }
 
-
-//        return "redirect:/";
     }
 
     @ExceptionHandler(StorageFileNotFoundException.class)
