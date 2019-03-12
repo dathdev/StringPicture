@@ -49,13 +49,13 @@ public class ImageController {
                 "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
 
-    @PostMapping("/image/transform")
+    @PostMapping("/image/stringify")
     @ResponseBody
-    public ResponseEntity<Resource> transformImage(@RequestParam("file") MultipartFile source) {
+    public ResponseEntity<Resource> stringifyImage(@RequestParam("file") MultipartFile source) {
         try {
             storageService.store(source);
             String filename = source.getOriginalFilename();
-            ImageProcessor.transformImage(filename);
+            ImageProcessor.stringifyImage(filename);
             Resource result = storageService.loadResultsAsResource(filename);
             return ResponseEntity.ok().header(
                     HttpHeaders.CONTENT_DISPOSITION,

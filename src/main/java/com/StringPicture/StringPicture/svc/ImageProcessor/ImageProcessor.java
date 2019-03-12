@@ -8,14 +8,14 @@ import org.opencv.imgcodecs.Imgcodecs;
 import java.nio.file.Path;
 
 public class ImageProcessor {
-    public static void transformImage(String filename){
-        Mat result = new ImageBuilder().getImageMat(StorageHelper.STORAGE_PATH + filename).applyGrayscale().cropCircle(650, 600, 280).build();
+    public static void stringifyImage(String filename){
+        Mat result = new ImageBuilder().getImageMat(StorageHelper.STORAGE_PATH + filename).applyGrayscale().cropCircle(650, 600, 280).stringify().build();
         Imgcodecs.imwrite(StorageHelper.RESULT_PATH + filename, result);
     }
 
     public static void main(String args[]) {
         String sourcePath = "src/assets/img/sample1.jpg";
-        Mat result = new ImageBuilder().getImageMat(sourcePath).applyGrayscale().cropCircle(650, 600, 280).build();
+        Mat result = new ImageBuilder().getImageMat(sourcePath).applyGrayscale().cropCircle(650, 600, 280).stringify().build();
 
         HighGui.imshow("Cropped image", result);
         HighGui.waitKey();
