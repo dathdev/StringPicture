@@ -19,10 +19,12 @@ import java.util.stream.Stream;
 public class FileSystemStorageService implements StorageService {
 
     private final Path rootLocation;
+    private final Path resultLocation;
 
     @Autowired
     public FileSystemStorageService(StorageProperties properties) {
         this.rootLocation = Paths.get(properties.getStoragePath());
+        this.resultLocation = Paths.get(properties.getResultPath());
     }
 
     @Override
@@ -50,14 +52,36 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public Path load(String filename) {
+    public Path loadStorage(String filename) {
         return rootLocation.resolve(filename);
     }
 
     @Override
-    public Resource loadAsResource(String filename) {
+    public Path loadResults(String filename) {
+        return resultLocation.resolve(filename);
+    }
+
+    @Override
+    public Resource loadStorageAsResource(String filename) {
         try {
-            Path file = load(filename);
+            Path file = loadStorage(filename);
+            Resource resource = new UrlResource(file.toUri());
+            if(resource.exists() || resource.isReadable()) {
+                return resource;
+            }
+            else {
+                throw new StorageFileNotFoundException("Could not read file: " + filename);
+
+            }
+        } catch (MalformedURLException e) {
+            throw new StorageFileNotFoundException("Could not read file: " + filename, e);
+        }
+    }
+
+    @Override
+    public Resource loadResultsAsResource(String filename) {
+        try {
+            Path file = loadResults(filename);
             Resource resource = new UrlResource(file.toUri());
             if(resource.exists() || resource.isReadable()) {
                 return resource;
@@ -79,7 +103,9 @@ public class FileSystemStorageService implements StorageService {
     @Override
     public void init() {
         try {
+            Files.deleteIfExists(rootLocation); //TODO: find a way to organize this so we don't have to delete so much
             Files.createDirectory(rootLocation);
+            Files.createDirectory(resultLocation);
         } catch (IOException e) {
             throw new StorageException("Could not initialize storage", e);
         }

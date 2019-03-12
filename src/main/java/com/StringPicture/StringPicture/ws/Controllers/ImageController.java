@@ -13,9 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +43,7 @@ public class ImageController {
     @GetMapping("/image/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-        Resource file = storageService.loadAsResource(filename);
+        Resource file = storageService.loadStorageAsResource(filename);
         return ResponseEntity.ok().header(
                 HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + file.getFilename() + "\"").body(file);
@@ -56,9 +54,9 @@ public class ImageController {
     public ResponseEntity<Resource> transformImage(@RequestParam("file") MultipartFile source) {
         try {
             storageService.store(source);
-            String filepath = storageService.load(source.getOriginalFilename()).toString();
-            ImageProcessor.transformImage(filepath);
-            Resource result = storageService.loadAsResource(filepath);
+            String filename = source.getOriginalFilename();
+            ImageProcessor.transformImage(filename);
+            Resource result = storageService.loadResultsAsResource(filename);
             return ResponseEntity.ok().header(
                     HttpHeaders.CONTENT_DISPOSITION,
                     "attachment; filename=\"" + result.getFilename() + "\"").body(result);
