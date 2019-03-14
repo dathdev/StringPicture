@@ -4,18 +4,37 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
-import org.opencv.highgui.HighGui;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class StringifierHelper {
+public class Stringifier {
     private static double WHITE = 255.0;
 
     public static void stringify(Mat image) {
-        //TODO: implement this
-        List<Point> circlePoints = StringifierHelper.getAllCirclePoints(image);
+        //get all circle points
+        List<Point> circlePoints = Stringifier.getAllCirclePoints(image);
+        //TODO: get all lines with intensity > threshold
+        //TODO: threshold TBD
+        //TODO: number of pins TBD
+    }
+
+    private static List<Line> getConnectableLines(Mat image, List<Point> points) {
+        List<Line> result = new ArrayList<>();
+
+        for (Point start : points) {
+            for (Point end : points) {
+                Line currentLine = new Line(start, end);
+                // read all pixel on the line
+            }
+        }
+
+        return result;
+    }
+
+    private static boolean shouldConnect(Line line, Mat image, double threshold) {
+
     }
 
     private static List<Point> getAllCirclePoints(Mat image) {

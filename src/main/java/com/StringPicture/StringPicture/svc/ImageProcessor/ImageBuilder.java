@@ -46,13 +46,6 @@ public class ImageBuilder {
 
         Rect rect = Imgproc.boundingRect(contours.get(0));
         Mat cropped = masked.submat(rect);
-        //TODO: crop circle with no background
-//        Mat cleanupMask = new Mat(cropped.rows(), cropped.cols(), CvType.CV_8U, Scalar.all(255));
-//        Point cleanupCenter = new Point(radius, radius);
-//        Imgproc.circle(cleanupMask, cleanupCenter, radius, new Scalar(0,0,0), -1, 8, 0);
-//
-//        Mat cleanedup = new Mat();
-//        cropped.copyTo(cleanedup, cleanupMask);
 
         _image = cropped;
         return this;

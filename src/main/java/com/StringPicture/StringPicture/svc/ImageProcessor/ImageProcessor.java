@@ -14,7 +14,7 @@ public class ImageProcessor {
     public static void main(String args[]) {
         String sourcePath = "src/assets/img/sample1.jpg";
         Mat result = new ImageBuilder().getImageMat(sourcePath).applyGrayscale().cropCircle(650, 600, 280).stringify().build();
-        StringifierHelper.stringify(result);
+        Stringifier.stringify(result);
         HighGui.imshow("Cropped image", result);
         HighGui.waitKey();
         System.exit(0);
