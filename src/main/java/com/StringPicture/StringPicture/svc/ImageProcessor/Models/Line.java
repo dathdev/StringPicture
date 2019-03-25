@@ -1,4 +1,4 @@
-package com.StringPicture.StringPicture.svc.ImageProcessor;
+package com.StringPicture.StringPicture.svc.ImageProcessor.Models;
 
 import org.opencv.core.Point;
 

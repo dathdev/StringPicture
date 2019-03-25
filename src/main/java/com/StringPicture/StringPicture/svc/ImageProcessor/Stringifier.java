@@ -1,5 +1,6 @@
 package com.StringPicture.StringPicture.svc.ImageProcessor;
 
+import com.StringPicture.StringPicture.svc.ImageProcessor.Models.Line;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
