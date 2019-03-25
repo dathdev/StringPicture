@@ -34,7 +34,7 @@ public class Stringifier {
     }
 
     private static boolean shouldConnect(Line line, Mat image, double threshold) {
-
+        return false;
     }
 
     private static List<Point> getAllCirclePoints(Mat image) {
